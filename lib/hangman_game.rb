@@ -134,17 +134,20 @@ module General_game
 end
 
 class Game
+    @@game_init = false
+    @@name = ""
     def initialize(path)
         @game_save = false
         @word_game = ""
         @word_display = []
-        @name = input_name
+        @@name = input_name unless @@game_init
+        @@game_init = true
         @state = 0
         @word_game = new_word(path)
         p @word_game
         @word_display = @word_game.split('').map!{|item| item = "___"}
         draw_state(@state)
-        welcome_player(@name, @word_display.join(' '))
+        welcome_player(@@name, @word_display.join(' '))
     end
 
     include General_game
@@ -217,13 +220,15 @@ while general_menu do
         puts "\nEnter a unvailable option\n"
     end
 end
-
-if option == 1
-    if Dir.exist?('save_game') then FileUtils.rm_rf('save_game') end
-    player = Player.new(path_file)
-
-    player.input_letter
-
+parcial_game = true
+while parcial_game do
+    if option == 1
+        if Dir.exist?('save_game') then FileUtils.rm_rf('save_game') end
+        player = Player.new(path_file)
+        player.input_letter
+        print "Do you want play again? y/n (n): "
+        gets.chomp.upcase == "Y" ? parcial_game = true : parcial_game = false
+    end
 end
 
 
