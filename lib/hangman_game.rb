@@ -185,10 +185,11 @@ class Player < Game
             elsif option == "SAVE"
                 puts "Game saved"
             elsif option == "EXIT"
-                puts "Do you want to save the Game? y/n"
+                print "Do you want to save the Game? y/n (n): "
                 if gets.chomp.upcase == "Y"
                     puts "Game saved"
                 end
+                return 1
             else
                 @state += 1
                 puts "Wrong! Chart: #{option} is incorrect"
@@ -198,8 +199,10 @@ class Player < Game
         end
         if @state >= 6 
             puts "YOU LOSE! The correct word is: \n\t#{@word_game}"
+            return 0
         elsif winner
             puts "Great, YOU WIN!"
+            return 0
         end
     end
 
@@ -225,9 +228,12 @@ while parcial_game do
     if option == 1
         if Dir.exist?('save_game') then FileUtils.rm_rf('save_game') end
         player = Player.new(path_file)
-        player.input_letter
-        print "Do you want play again? y/n (n): "
-        gets.chomp.upcase == "Y" ? parcial_game = true : parcial_game = false
+        if player.input_letter == 0
+            print "Do you want play again? y/n (n): "
+            gets.chomp.upcase == "Y" ? parcial_game = true : parcial_game = false
+        else
+            parcial_game = false
+        end
     end
 end
 
