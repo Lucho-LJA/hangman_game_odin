@@ -119,15 +119,11 @@ module General_game
             lines = File.readlines(path)
             index_length = lines.length
             value_found = false
-            while value_found == false do
+            while !value_found do
                 random_num = random.rand(index_length)
                 unless random_index.include?(random_num)
                     word = lines[random_num].chomp
-                    if word.length < 5 or word.length > 12
-                        random_index.push(random_num)
-                    else
-                        value_found = true
-                    end
+                    word.length < 5 or word.length > 12 ? random_index.push(random_num) : value_found = true
                 end
             end
         else
@@ -149,7 +145,6 @@ class Game
         @state = 0
         unless game_save
             @word_game = new_word(@path)
-            p @word_game
             @word_display = @word_game.split('').map!{|item| item = "___"}
             draw_state(@state)
             welcome_player(@@name, @word_display.join(' '))
@@ -163,7 +158,6 @@ class Game
         @state = var_game["state"]
         @@name = var_game["name"]
         @word_game = var_game["word_game"]
-        p @word_game
         @word_display = var_game["word_display"]
         draw_state(@state)
         welcome_player(@@name, @word_display.join(' '))
@@ -178,12 +172,14 @@ class Game
         File.open(filename, "w") do |f|
             f.puts(str_class.to_json)
         end
+        @@game_init = false
         puts "Game Saved"
     end
 
     include General_game
 
     def draw_state(state)
+        p @word_game #uncomment to show the word to guess
         puts draw_hangman(state).join('')
     end
 
@@ -192,20 +188,14 @@ class Game
         @word_game.split('').each_with_index do |element, index|
             if element.upcase == chart then @word_display[index] = "_#{chart}_" end
         end
-        if @word_display.any?{|elem| elem == "___"}
-            return false 
-        else 
-            return true
-        end
+        @word_display.any?{|elem| elem == "___"} ? false : true
     end
-
-
 end
 
 class Player < Game
     def input_letter
         winner = false
-        while winner == false and @state < 6 do
+        while !winner and @state < 6 do
             print "\nEnter one chart: "
             option = gets.chomp.upcase
             if option.length == 1 and @word_game.upcase.include?(option)
@@ -217,6 +207,7 @@ class Player < Game
                 save_game
                 return 2
             elsif option == "EXIT"
+                @@game_init = false
                 print "Do you want to save the Game? y/n (n): "
                 if gets.chomp.upcase == "Y"
                     save_game
@@ -260,9 +251,7 @@ while general_game do
     parcial_game = true
     while parcial_game do
         if option == 1
-            if Dir.exist?('./save_game')
-                FileUtils.rm_r('./save_game')
-            end
+            Dir.exist?('./save_game') ? FileUtils.rm_r('./save_game') : 
             player = Player.new(path_file)
             game_turn = player.input_letter
             if game_turn == 0
@@ -285,7 +274,6 @@ while general_game do
                         player.set_init(false)
                         parcial_game = false
                     end
-                    
                 else
                     player.set_init(false)
                     parcial_game = false
