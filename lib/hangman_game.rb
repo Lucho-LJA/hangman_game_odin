@@ -1,7 +1,8 @@
 require 'FileUtils'
 require 'json'
-path_file = "./google-10000-english-no-swears.txt"
-path_game = "./save_game/saved_game.json"
+PATH_FILE = "./google-10000-english-no-swears.txt"
+PATH_GAME = "./save_game/saved_game.json"
+PATH_FILE_GAME = "./save_game"
 
 module General_game
 
@@ -165,13 +166,10 @@ class Game
 
     def save_game
         puts "Saving Game"
-        Dir.mkdir('save_game') unless Dir.exist?('save_game')
-        filename = "save_game/saved_game.json"
+        Dir.mkdir(PATH_FILE_GAME) unless Dir.exist?(PATH_FILE_GAME)
         str_class ={path:@path, word_display:@word_display,word_game:@word_game,
             game_init:true,name:@@name, state:@state}
-        File.open(filename, "w") do |f|
-            f.puts(str_class.to_json)
-        end
+        File.open(PATH_GAME, "w"){|f| f.puts(str_class.to_json)}
         @@game_init = false
         puts "Game Saved"
     end
@@ -251,8 +249,8 @@ while general_game do
     parcial_game = true
     while parcial_game do
         if option == 1
-            Dir.exist?('./save_game') ? FileUtils.rm_r('./save_game') : 
-            player = Player.new(path_file)
+            Dir.exist?(PATH_FILE_GAME) ? FileUtils.rm_r(PATH_FILE_GAME) : 
+            player = Player.new(PATH_FILE)
             game_turn = player.input_letter
             if game_turn == 0
                 print "Do you want play again? y/n (n): "
@@ -261,9 +259,9 @@ while general_game do
                 parcial_game = false
             end
         elsif option == 2
-            if Dir.exist?('./save_game') and File.exist?('./save_game/saved_game.json')
-                player = Player.new(path_file,true)
-                player.load_game(path_game)
+            if Dir.exist?(PATH_FILE_GAME) and File.exist?(PATH_GAME)
+                player = Player.new(PATH_FILE,true)
+                player.load_game(PATH_GAME)
                 game_turn = player.input_letter
                 if game_turn == 0
                     print "Do you want play again? y/n (n): "
