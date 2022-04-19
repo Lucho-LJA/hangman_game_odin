@@ -1,6 +1,7 @@
 require 'FileUtils'
 require 'json'
 path_file = "./google-10000-english-no-swears.txt"
+path_game = "./save_game/saved_game.json"
 
 module General_game
 
@@ -139,18 +140,29 @@ end
 class Game
     @@game_init = false
     @@name = ""
-    def initialize(path,game_save=false,word_game="",game_init=false,name = "", state=0)
+    def initialize(path,game_save=false)
         @path = path
         @game_save = game_save
         @word_display = []
-        @@name = input_name unless @@game_init and game_init
-        @@name = name unless name == ""
+        @@name = input_name unless @@game_init or game_save
         @@game_init = true
-        @state = state
-        @word_game = new_word(@path) if word_game == ""
-        @word_game = word_game unless word_game == ""
+        @state = 0
+        unless game_save
+            @word_game = new_word(@path)
+            p @word_game
+            @word_display = @word_game.split('').map!{|item| item = "___"}
+            draw_state(@state)
+            welcome_player(@@name, @word_display.join(' '))
+        end
+    end
+
+    def load_game(path)
+        var_game = JSON.load(File.new(path))
+        @state = var_game["state"]
+        @@name = var_game["name"]
+        @word_game = var_game["word_game"]
         p @word_game
-        @word_display = @word_game.split('').map!{|item| item = "___"}
+        @word_display = var_game["word_display"]
         draw_state(@state)
         welcome_player(@@name, @word_display.join(' '))
     end
@@ -159,7 +171,7 @@ class Game
         puts "Saving Game"
         Dir.mkdir('save_game') unless Dir.exist?('save_game')
         filename = "save_game/saved_game.json"
-        str_class ={path:@path, game_save:true,word_game:@word_game,
+        str_class ={path:@path, word_display:@word_display,word_game:@word_game,
             game_init:true,name:@@name, state:@state}
         File.open(filename, "w") do |f|
             f.puts(str_class.to_json)
@@ -251,6 +263,23 @@ while parcial_game do
         if game_turn == 0
             print "Do you want play again? y/n (n): "
             gets.chomp.upcase == "Y" ? parcial_game = true : parcial_game = false
+        else
+            parcial_game = false
+            break
+        end
+    elsif option == 2
+        player = Player.new(path_file,true)
+        player.load_game(path_game)
+        game_turn = player.input_letter
+        if game_turn == 0
+            print "Do you want play again? y/n (n): "
+            if gets.chomp.upcase == "Y"
+                parcial_game = true
+                option = 1
+            else
+                parcial_game = false
+            end
+            
         else
             parcial_game = false
             break
