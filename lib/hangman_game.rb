@@ -1,5 +1,7 @@
 path_file = "./google-10000-english-no-swears.txt"
 module General_game
+
+    private
     def draw_hangman(num=0)
         array = [" ","_","_","_","_\n",
             " ","|"," "," "," |\n",
@@ -63,7 +65,6 @@ module General_game
         array
     end
 
-    private
     def new_word(path)
         word = "hangman"
         if File.exist?(path)
@@ -93,13 +94,19 @@ end
 class Game
     @game_end = false
     @word_game = ""
+    @state = 0
 
     def initialize(name,path)
         @name = name
         @word_game = new_word(path)
+        draw_state(@state)
     end
 
     include General_game
+
+    def draw_state(state)
+        puts draw_hangman(state).join('')
+    end
 
 end
 
@@ -109,12 +116,6 @@ class Player < Game
     end
 end
 player1 = Player.new("Luis",path_file)
-puts player1.draw_hangman(0).join('')
-puts player1.draw_hangman(1).join('')
-puts player1.draw_hangman(2).join('')
-puts player1.draw_hangman(3).join('')
-puts player1.draw_hangman(4).join('')
-puts player1.draw_hangman(5).join('')
-puts player1.draw_hangman(6).join('')
+
 
 
