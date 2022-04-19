@@ -157,7 +157,9 @@ class Game
     end
 
     def load_game(path)
-        var_game = JSON.load(File.new(path))
+        file_load= File.new(path)
+        var_game = JSON.load(file_load)
+        file_load.close
         @state = var_game["state"]
         @@name = var_game["name"]
         @word_game = var_game["word_game"]
@@ -237,8 +239,8 @@ class Player < Game
         end
     end
 
-    def test
-        @word_game
+    def set_init(val)
+        @@game_init = val
     end
 end
 
@@ -258,7 +260,9 @@ while general_game do
     parcial_game = true
     while parcial_game do
         if option == 1
-            if Dir.exist?('save_game') then FileUtils.rm_rf('save_game') end
+            if Dir.exist?('./save_game')
+                FileUtils.rm_r('./save_game')
+            end
             player = Player.new(path_file)
             game_turn = player.input_letter
             if game_turn == 0
@@ -268,21 +272,29 @@ while general_game do
                 parcial_game = false
             end
         elsif option == 2
-            player = Player.new(path_file,true)
-            player.load_game(path_game)
-            game_turn = player.input_letter
-            if game_turn == 0
-                print "Do you want play again? y/n (n): "
-                if gets.chomp.upcase == "Y"
-                    parcial_game = true
-                    option = 1
+            if Dir.exist?('./save_game') and File.exist?('./save_game/saved_game.json')
+                player = Player.new(path_file,true)
+                player.load_game(path_game)
+                game_turn = player.input_letter
+                if game_turn == 0
+                    print "Do you want play again? y/n (n): "
+                    if gets.chomp.upcase == "Y"
+                        parcial_game = true
+                        option = 1
+                    else
+                        player.set_init(false)
+                        parcial_game = false
+                    end
+                    
                 else
+                    player.set_init(false)
                     parcial_game = false
                 end
-                
             else
+                puts "There is not a saved game.\nPlease, choise new game"
                 parcial_game = false
             end
+
         else
             parcial_game = false
             general_game = false
