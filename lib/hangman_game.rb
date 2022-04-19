@@ -141,7 +141,7 @@ class Game
         @name = input_name
         @state = 0
         @word_game = new_word(path)
-        #p @word_game
+        p @word_game
         @word_display = @word_game.split('').map!{|item| item = "___"}
         draw_state(@state)
         welcome_player(@name, @word_display.join(' '))
@@ -158,6 +158,11 @@ class Game
         @word_game.split('').each_with_index do |element, index|
             if element.upcase == chart then @word_display[index] = "_#{chart}_" end
         end
+        if @word_display.any?{|elem| elem == "___"}
+            return false 
+        else 
+            return true
+        end
     end
 
 
@@ -165,20 +170,33 @@ end
 
 class Player < Game
     def input_letter
-        print "\nEnter one chart: "
-        option = gets.chomp.upcase
-        if option.length == 1 and @word_game.upcase.include?(option)
-            save_correct_chart(option)
-            puts "Great! Chart: #{option} is correct"
-            draw_state(@state)
-            puts @word_display.join(' ')
-        elsif option == "SAVE"
-            puts "Game saved"
-        elsif option == "EXIT"
-            puts "Do tou want to save the Game? y/n"
-            if gets.chomp.upcase == "Y"
+        winner = false
+        while winner == false and @state < 6 do
+            print "\nEnter one chart: "
+            option = gets.chomp.upcase
+            if option.length == 1 and @word_game.upcase.include?(option)
+                winner = save_correct_chart(option)
+                puts "Great! Chart: #{option} is correct"
+                draw_state(@state)
+                puts @word_display.join(' ')
+            elsif option == "SAVE"
                 puts "Game saved"
+            elsif option == "EXIT"
+                puts "Do you want to save the Game? y/n"
+                if gets.chomp.upcase == "Y"
+                    puts "Game saved"
+                end
+            else
+                @state += 1
+                puts "Wrong! Chart: #{option} is incorrect"
+                draw_state(@state)
+                puts @word_display.join(' ')
             end
+        end
+        if @state >= 6 
+            puts "YOU LOSE! The correct word is: \n\t#{@word_game}"
+        elsif winner
+            puts "Great, YOU WIN!"
         end
     end
 
