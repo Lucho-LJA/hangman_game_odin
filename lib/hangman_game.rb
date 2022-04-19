@@ -244,48 +244,52 @@ end
 
 #Main code
 General_game.title
-
-general_menu = true
-while general_menu do
-    option = General_game.General_menu
-    if option > 0 and option < 4
-        general_menu = false
-    else
-        puts "\nEnter a unvailable option\n"
-    end
-end
-parcial_game = true
-while parcial_game do
-    if option == 1
-        if Dir.exist?('save_game') then FileUtils.rm_rf('save_game') end
-        player = Player.new(path_file)
-        game_turn = player.input_letter
-        if game_turn == 0
-            print "Do you want play again? y/n (n): "
-            gets.chomp.upcase == "Y" ? parcial_game = true : parcial_game = false
+general_game = true
+while general_game do
+    general_menu = true
+    while general_menu do
+        option = General_game.General_menu
+        if option > 0 and option < 4
+            general_menu = false
         else
-            parcial_game = false
-            break
+            puts "\nEnter a unvailable option\n"
         end
-    elsif option == 2
-        player = Player.new(path_file,true)
-        player.load_game(path_game)
-        game_turn = player.input_letter
-        if game_turn == 0
-            print "Do you want play again? y/n (n): "
-            if gets.chomp.upcase == "Y"
-                parcial_game = true
-                option = 1
+    end
+    parcial_game = true
+    while parcial_game do
+        if option == 1
+            if Dir.exist?('save_game') then FileUtils.rm_rf('save_game') end
+            player = Player.new(path_file)
+            game_turn = player.input_letter
+            if game_turn == 0
+                print "Do you want play again? y/n (n): "
+                gets.chomp.upcase == "Y" ? parcial_game = true : parcial_game = false
             else
                 parcial_game = false
             end
-            
+        elsif option == 2
+            player = Player.new(path_file,true)
+            player.load_game(path_game)
+            game_turn = player.input_letter
+            if game_turn == 0
+                print "Do you want play again? y/n (n): "
+                if gets.chomp.upcase == "Y"
+                    parcial_game = true
+                    option = 1
+                else
+                    parcial_game = false
+                end
+                
+            else
+                parcial_game = false
+            end
         else
             parcial_game = false
-            break
+            general_game = false
         end
     end
 end
+puts "Thanks for play"
 
 
 
