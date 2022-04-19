@@ -177,7 +177,7 @@ class Game
     include General_game
 
     def draw_state(state)
-        p @word_game #uncomment to show the word to guess
+        #p @word_game #uncomment to show the word to guess
         puts draw_hangman(state).join('')
     end
 
