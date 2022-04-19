@@ -1,7 +1,36 @@
 path_file = "./google-10000-english-no-swears.txt"
 module General_game
 
+    public
+    def General_game.title(name = "Player")
+        n = 70
+        welcome_str = " Welcome #{name} to HANGMAN GAME "
+        for i in 0..n do print "\#" end
+        print "\n"
+        for i in 0..(n-welcome_str.length)/2 do print "\#" end
+        print welcome_str
+        for i in 0..(n-welcome_str.length)/2 do print "\#" end
+        print "\n"
+        for i in 0..n do print "\#" end
+        print "\n\n"
+        for i in 0..n do print "\#" end
+        print "\n"
+        puts %{These are the Rules:
+        - Guess the hidden word letter by letter
+        - Guess bofore the draw is complete
+        - Write save if you want to save the game
+        - If you saved the game, select the option load game
+        \n"Luck and Go Ahead!        }
+        for i in 0..n do print "\#" end
+        print "\n\n"
+        puts "Choose a option"
+        puts "\t- (1) New Game"
+        puts "\t- (2) Load Game"
+        puts "\t- (3) Exit"
+        return gets.chomp.to_i
+    end
     private
+
     def draw_hangman(num=0)
         array = [" ","_","_","_","_\n",
             " ","|"," "," "," |\n",
@@ -92,7 +121,7 @@ module General_game
 end
 
 class Game
-    @game_end = false
+    @game_save = false
     @word_game = ""
     @state = 0
 
@@ -115,7 +144,9 @@ class Player < Game
         @word_game
     end
 end
-player1 = Player.new("Luis",path_file)
+
+option = General_game.title
+puts option
 
 
 
