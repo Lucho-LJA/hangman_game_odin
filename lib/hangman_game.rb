@@ -1,4 +1,5 @@
 path_file = "./google-10000-english-no-swears.txt"
+
 module General_game
 
     public
@@ -23,13 +24,25 @@ module General_game
         \n"Luck and Go Ahead!        }
         for i in 0..n do print "\#" end
         print "\n\n"
+    end
+
+    def General_game.General_menu
         puts "Choose a option"
         puts "\t- (1) New Game"
         puts "\t- (2) Load Game"
         puts "\t- (3) Exit"
         return gets.chomp.to_i
     end
+
     private
+    def welcome_player(name, word)
+        puts "\n Hi #{name}. Guess the next word"
+        puts word
+    end
+    def input_name
+        print "\nEnter your name: "
+        gets.chomp
+    end
 
     def draw_hangman(num=0)
         array = [" ","_","_","_","_\n",
@@ -121,14 +134,17 @@ module General_game
 end
 
 class Game
-    @game_save = false
-    @word_game = ""
-    @state = 0
-
-    def initialize(name,path)
-        @name = name
+    def initialize(path)
+        @game_save = false
+        @word_game = ""
+        @word_display = []
+        @name = input_name
+        @state = 0
         @word_game = new_word(path)
+        #p @word_game
+        @word_display = @word_game.split('').map!{|item| item = "___"}
         draw_state(@state)
+        welcome_player(@name, @word_display.join(' '))
     end
 
     include General_game
@@ -137,16 +153,60 @@ class Game
         puts draw_hangman(state).join('')
     end
 
+    private 
+    def save_correct_chart(chart)
+        @word_game.split('').each_with_index do |element, index|
+            if element.upcase == chart then @word_display[index] = "_#{chart}_" end
+        end
+    end
+
+
 end
 
 class Player < Game
+    def input_letter
+        print "\nEnter one chart: "
+        option = gets.chomp.upcase
+        if option.length == 1 and @word_game.upcase.include?(option)
+            save_correct_chart(option)
+            puts "Great! Chart: #{option} is correct"
+            draw_state(@state)
+            puts @word_display.join(' ')
+        elsif option == "SAVE"
+            puts "Game saved"
+        elsif option == "EXIT"
+            puts "Do tou want to save the Game? y/n"
+            if gets.chomp.upcase == "Y"
+                puts "Game saved"
+            end
+        end
+    end
+
     def test
         @word_game
     end
 end
 
-option = General_game.title
-puts option
+#Main code
+General_game.title
+
+general_menu = true
+while general_menu do
+    option = General_game.General_menu
+    if option > 0 and option < 4
+        general_menu = false
+    else
+        puts "\nEnter a unvailable option\n"
+    end
+end
+
+if option == 1
+    if Dir.exist?('save_game') then FileUtils.rm_rf('save_game') end
+    player = Player.new(path_file)
+
+    player.input_letter
+
+end
 
 
 
